@@ -1,0 +1,40 @@
+name: Node.js CI
+on:
+  push:
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Install production dependencies, check node engine compatiblity
+        run: yarn install --production=true
+
+      - name: Install development dependencies
+        run: yarn install --production=false --ignore-engines
+
+      - name: Build & Code analysis
+        run: yarn run lint
+
+      - name: Build
+        run: yarn run build
+
+      - name: Upload build
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: |
+            lib/**/*.js
+            lib/**/*.js.map
+            lib/**/*.d.ts
+            test/**/*.js
+            test/**/*.js.map
